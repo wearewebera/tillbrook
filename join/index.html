@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Join Tillbrook Rx Savings</title>
+    <style>
+      :root {
+        --ink: #1d2a33;
+        --muted: #4d5b66;
+        --accent: #1f6f5c;
+        --line: #d5dde2;
+        --error-bg: #fdecec;
+        --error-ink: #8a1c1c;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Georgia, 'Times New Roman', serif;
+        color: var(--ink);
+        background: #f6f8f7;
+        font-size: 18px;
+        line-height: 1.5;
+      }
+      header { background: var(--accent); color: #fff; padding: 14px 24px; }
+      header p { margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 0.02em; }
+      main { max-width: 640px; margin: 0 auto; padding: 24px; }
+      h1 { font-size: 30px; margin: 8px 0 12px; }
+      h2 { font-size: 22px; margin: 28px 0 12px; }
+      .price { font-size: 18px; font-weight: bold; }
+      form { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 20px 24px; }
+      form h2 { margin-top: 0; }
+      label { display: block; margin: 14px 0 4px; font-weight: bold; }
+      input[type='text'], input[type='email'] {
+        width: 100%; padding: 10px; font-size: 18px; border: 1px solid #9aa7b0; border-radius: 4px;
+      }
+      .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; }
+      .check label { margin: 0; font-weight: normal; }
+      .check input { margin-top: 5px; width: 18px; height: 18px; }
+      button {
+        margin-top: 20px; padding: 12px 22px; font-size: 18px; color: #fff; background: var(--accent);
+        border: 0; border-radius: 4px; cursor: pointer;
+      }
+      .alert { background: var(--error-bg); color: var(--error-ink); padding: 10px 12px; border-radius: 4px; }
+      .terms p { color: var(--muted); }
+      footer { max-width: 640px; margin: 0 auto; padding: 0 24px 32px; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <header><p>Tillbrook Rx Savings</p></header>
+    <main>
+      <h1>Save on your prescriptions</h1>
+      <p>
+        Show your Tillbrook card at the pharmacy counter and pay less for brand-name and generic medicines.
+        It works for the whole household, and you can start using it the same day you join.
+      </p>
+
+      <form id="join" method="post" novalidate>
+        <h2>Join in a few minutes</h2>
+        <p id="form-error" class="alert" role="alert" hidden></p>
+
+        <label for="first">First name</label>
+        <input id="first" name="first" type="text" autocomplete="given-name" />
+
+        <label for="last">Last name</label>
+        <input id="last" name="last" type="text" autocomplete="family-name" />
+
+        <label for="dob">Date of birth</label>
+        <input id="dob" name="dob" type="text" />
+
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" />
+
+        <label for="zip">ZIP code</label>
+        <input id="zip" name="zip" type="text" inputmode="numeric" autocomplete="postal-code" />
+
+        <label for="bin">RxBIN / PCN</label>
+        <input id="bin" name="bin" type="text" />
+
+        <p>Privacy: we use your details to set up your card, and we share them with partners only if the box below is ticked.</p>
+
+        <div class="check">
+          <input id="share" name="share" type="checkbox" checked />
+          <label for="share">Share my details with Tillbrook partners for health and insurance offers</label>
+        </div>
+
+        <button type="submit">Join now</button>
+      </form>
+
+      <section id="done" hidden>
+        <h2>You are enrolled</h2>
+        <p>Your card number is <strong id="member"></strong>. Show it at the pharmacy counter with your prescription.</p>
+      </section>
+
+      <section class="terms">
+        <h2>Membership terms</h2>
+        <p>
+          Tillbrook Rx Savings is a prescription discount program, not insurance, and the discount you receive depends on
+          the medicine, the quantity and the pharmacy you choose. Discounts cannot be combined with insurance payments for
+          the same prescription. Membership begins with a 30-day introductory period, after which it renews automatically
+          at $39.95 per year until you cancel. You may cancel at any time, and a membership cancelled within its first
+          30 days is not charged. Prices at the counter are set by the pharmacy at the time of purchase.
+        </p>
+      </section>
+    </main>
+    <footer><p>&copy; 2026 Tillbrook Rx Savings. Tillbrook is a discount program and is not insurance.</p></footer>
+
+    <script>
+      (function () {
+        var form = document.getElementById('join');
+        var error = document.getElementById('form-error');
+        var REQUIRED = ['first', 'last', 'dob', 'email', 'zip'];
+
+        function value(id) {
+          return document.getElementById(id).value.trim();
+        }
+
+        function validDob(raw) {
+          var m = /^(\d{2})(\d{2})(\d{4})$/.exec(raw);
+          if (!m) return false;
+          var month = Number(m[1]);
+          var day = Number(m[2]);
+          var year = Number(m[3]);
+          var date = new Date(year, month - 1, day);
+          return (
+            date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day && year > 1900 &&
+            date < new Date()
+          );
+        }
+
+        function problems() {
+          var found = [];
+          REQUIRED.forEach(function (id) {
+            if (!value(id)) found.push(id);
+          });
+          if (value('dob') && !validDob(value('dob'))) found.push('dob');
+          if (value('email') && !value('email').match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) found.push('email');
+          if (value('zip') && !value('zip').match(/^\d{5}$/)) found.push('zip');
+          return found;
+        }
+
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          if (problems().length > 0) {
+            error.textContent = 'There was a problem with your submission. Please try again.';
+            error.hidden = false;
+            form.reset();
+            return;
+          }
+          var digits = String(Math.floor(100000 + Math.random() * 900000));
+          document.getElementById('member').textContent = 'TB-' + digits;
+          form.hidden = true;
+          document.getElementById('done').hidden = false;
+        });
+      })();
+    </script>
+  </body>
+</html>
